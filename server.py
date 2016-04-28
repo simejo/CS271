@@ -10,19 +10,7 @@ while True:
    c, addr = s.accept()     # Establish connection with client.
    print 'Got connection from', addr
    c.send('Thank you for connecting')
+   message = c.recv(1024)
+   
+
    c.close()                # Close the connection
-
-
-
-class client(object):
-	"""docstring for client"""
-	def __init__(self):
-
-
-
-
-class socket(object):
-	"""docstring for socket"""
-	def __init__(self):
-		super(socket, self).__init__()
-		
