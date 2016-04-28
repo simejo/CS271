@@ -7,12 +7,13 @@ class TimeTable(object):
         self.node_id = node_id
 
     def init_table(self):
-        self.table = [[0]* self.dim] * self.dim
+        self.table = [[0]* self.dim for _ in range(self.dim)]
     
     # Update local row
     def tick(self):
-    	print self.table
-    	self.table[self.node_id][self.node_id] +=1
+        node = self.node_id
+        print self.table[0][0]
+    	self.table[node][node] +=1
 
     # Synchronize
     def synchronize_tt(self, t2):
@@ -21,7 +22,6 @@ class TimeTable(object):
     			self.table[i][j] = max(self.table[i][j], t2[i][j])
 
     def toString(self):
-    	print self.table
     	for i in range(self.dim):
     		print self.table[i]
 

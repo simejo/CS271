@@ -37,7 +37,7 @@ mySocket = socket.socket ( socket.AF_INET, socket.SOCK_STREAM )
 host = socket.gethostname() # Get local machine name
 print "Server initialized. HOST: " + str(host) + " PORT:"
 port = 12345                # Reserve a port for your service.
-s.bind(('', port))         # Bind to the port
+s.bind((host, port))         # Bind to the port
 
 s.listen(5)                 # Now wait for client connection.
 while True:
