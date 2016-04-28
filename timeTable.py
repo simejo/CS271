@@ -17,6 +17,8 @@ class TimeTable(object):
 
     # Synchronize
     def synchronize_tt(self, t2):
+        for i in range(self.dim):
+            self.table[self.node_id][i] = t2.table[t2.node_id][i]
     	for i in range(self.dim):
     		for j in range(self.dim):
     			self.table[i][j] = max(self.table[i][j], t2[i][j])
