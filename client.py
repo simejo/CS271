@@ -4,7 +4,7 @@ s = socket.socket()         # Create a socket object
 host = socket.gethostname() # Get local machine name
 port = 12345                # Reserve a port for your service.
 
-s.connect(('10.2.162.209', port))
+s.connect((host, port))
 print s.recv(1024)
 
 input_text = raw_input('Enter your command:')
