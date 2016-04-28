@@ -7,26 +7,26 @@ port = 12345                # Reserve a port for your service.
 s.connect((host, port))
 print s.recv(1024)
 
-input = raw_input('Enter your command:')
+input_text = raw_input('Enter your command:')
 
 isNotDone = True
 
 while(isNotDone):
-	input_string = input.split(' ', 1)
+	input_string = input_text.split(' ', 1)
 	if(input_string[0] == 'post'):
-		s.send(input)
+		s.send(input_text)
 		print "Your message: " + input_string[1]
 		isNotDone = False
 	elif(input_string[0] == 'lookup'):
-		s.send(input)
+		s.send(input_text)
 		print "MATTAFACKA"
 		isNotDone = False
 	elif(input_string[0] == 'sync'):
-		s.send(input_string)
+		s.send(input_text)
 		print "sync with " + input_string[1]
 		isNotDone = False
 	else:
-		input = raw_input('Wrong argument. Use post, lookup or sync? ')
+		input_text = raw_input('Wrong argument. Use post, lookup or sync? ')
 
 
 s.close                     # Close the socket when done
