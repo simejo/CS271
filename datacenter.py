@@ -13,6 +13,12 @@ class Replicated_log(object):
       for key, value in self.log.iteritems() :
          print key, value
 
+class ReplicatedDict(object):
+   """docstring for ReplicatedDict"""
+   def __init__(self):
+      self.dict = {}
+      
+
 
 class datacenter(object):
    def __init__(self, node_id, port):
@@ -66,56 +72,33 @@ class datacenter(object):
    def close_connection(self):
       self.s.close()
 
+   def connect_to(self, addr):
+      s = socket.socket()
+      s.connect((addr, self.port))
+
+      input_text = raw_input('Enter your command:')
+      isNotDone = True
+      while(isNotDone):
+         input_string = input_text.split(' ', 1)
+         if(input_string[0] == 'post'):
+            s.send(input_text)
+            print "Your message: " + input_string[1]
+            isNotDone = False
+         elif(input_string[0] == 'lookup'):
+            s.send(input_text)
+            print "MATTAFACKA"
+            isNotDone = False
+         elif(input_string[0] == 'sync'):
+            s.send(input_text)
+            print "sync with " + input_string[1]
+            isNotDone = False
+         else:
+            input_text = raw_input('Wrong argument. Use post, lookup or sync? ')
+
+
+      s.close
+
 
 server = datacenter(0,12345)
 server.initialize_connection()
-
-
-"""
-s = socket.socket()         # Create a socket object
-server_log = Replicated_log() # Create replicated log
-      
-myTimeTable = timeTable.TimeTable(2,0)
-
-def handle_post(message):
-   print "Handle Post .... " + str(message)
-   myTimeTable.tick()
-   print myTimeTable.toString()
-
-def handle_lookup():
-   print 'Handle lookup ....'
-
-def handle_sync(datacenter):
-   print 'Handle sync with .... ' + str(datacenter)
-
-#s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-host = socket.gethostname() # Get local machine name
-print "Server initialized. HOST: " + str(host) + " PORT:"
-port = 12345                # Reserve a port for your service.
-s.bind((host, port))         # Bind to the port
-s.listen(5)                 # Now wait for client connection.
-while True:
-   print "Server running..."
-   c, addr = s.accept()     # Establish connection with client.
-   print 'Got connection from', addr
-   c.send('Thank you for connecting')
-   message = c.recv(1024)
-
-
-   try:
-      input_string = message.split(' ', 1)
-      if (input_string[0] == "post"):
-         handle_post(input_string[1])
-      elif (input_string[0] == 'lookup'):
-         handle_lookup()
-      elif (input_string[0] == 'sync'):
-         handle_sync(input_string[1])
-   except Exception, e:
-      print 'Something wrong happend. Server shutting down...'
-      c.close()
-      break
-   c.close()                # Close the connection
-
-"""
-
-
+server.connect_to('')

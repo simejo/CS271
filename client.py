@@ -29,7 +29,7 @@ class Client(object):
 				print "sync with " + input_string[1]
 				isNotDone = False
 			else:
-				input_text = raw_input('Wrong argument. Use post, lookup or sync? ')
+				input_text = raw_input('Wrong argument. Use post, lookup or sync ')
 
 
 		s.close
