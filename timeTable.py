@@ -12,7 +12,6 @@ class TimeTable(object):
     # Update local row
     def tick(self):
         node = self.node_id
-        print self.table[0][0]
     	self.table[node][node] +=1
 
     # Synchronize
