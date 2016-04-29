@@ -98,10 +98,10 @@ class datacenter(object):
          else:
             input_text = raw_input('Wrong argument. Use post, lookup or sync? ')
 
-
       s.close
 
 
+#PROBLEM: HOW TO LISTEN FOR MESSAGES IN THE SAME TIME AS IT SHOULD BE ABLE TO SEND? CREATE SOME TYPE OF LISTENER?
 server = datacenter(0,10000, 12345)
 #threading.Thread(target=server.connect_to('169.231.121.215')).start()
 threading.Thread(target=server.initialize_connection()).start()
