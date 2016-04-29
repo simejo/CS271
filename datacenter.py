@@ -67,7 +67,7 @@ class datacenter(object):
                break
          except Exception, e:
             print e
-            print 'Something wrong happend. Server shutting down...'
+            print 'Something wrong happened. Server shutting down...'
             c.close()
             break
          c.close()                # Close the connection
@@ -102,6 +102,6 @@ class datacenter(object):
       s.close
 
 
-server = datacenter(0,12345,10000)
-#threading.Thread(target = server.connect_to('128.111.43.36')).start()
-threading.Thread(target = server.initialize_connection()).start()
+server = datacenter(0,10000, 12345)
+#threading.Thread(target=server.connect_to('169.231.121.215')).start()
+threading.Thread(target=server.initialize_connection()).start()
