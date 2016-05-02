@@ -30,6 +30,11 @@ class TimeTable(object):
         return self.table
 
 
+    def getTime(self):
+        return self.table[self.node_id][self.node_id]
+
+
+
 
 
 

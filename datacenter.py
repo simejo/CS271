@@ -3,19 +3,8 @@ import timeTable
 import event
 import threading
 import pickle
+import log
 
-class Replicated_log(object):
-   def __init__(self):
-      self.log = []
-
-   def input_in_log(self, event):
-      self.log.append(message)
-
-   def lookup_log(self):
-      print self.log
-
-   def delete_in_log(self, event):
-      self.log.remove(event)
 
 class ReplicatedDict(object):
    def __init__(self):
@@ -33,10 +22,15 @@ class datacenter(object):
       self.port_out = port_out
       self.addr = ''
       self.c = None
+      self.log = log.Log()
 
    def handle_post(self, message):
       print "Handle Post .... " + str(message)
       self.timeTable.tick()
+      time = timeTable.getTime() 
+      event = event.Event('post', input_string[1], time, self.node_id)
+      self.log.input_in_log(event)
+      print self.log
       print self.timeTable.toString()
 
    def handle_lookup(self):
