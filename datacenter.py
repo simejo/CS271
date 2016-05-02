@@ -4,9 +4,8 @@ import event
 import threading
 import pickle
 import log
+import signal
 import dictionary
-
-
 
 
 class datacenter(object):
@@ -94,50 +93,41 @@ class datacenter(object):
       s.bind((self.hostname, self.port_in))
       s.listen(5)
       while True:
-         print "Server running... HOST: " + self.hostname
-         c, addr = s.accept()     # Establish connection with client.
-         self.addr = addr
-         self.c = c
-         print 'Got connection from', addr
-         c.send('Thank you for connecting')
-         message = c.recv(1024)
-         self.check_message(message)
-         c.close()                # Close the connection
+         try:
+            print "Server running... HOST: " + self.hostname
+            c, addr = s.accept()     # Establish connection with client.
+            self.addr = addr
+            self.c = c
+            print 'Got connection from', addr
+            c.send('Thank you for connecting')
+            message = c.recv(1024)
+            self.check_message(message)
+            c.close()                # Close the connection
+         except KeyboardInterrupt:
+            self.shut_down
+            print "KeyboardInterrupt caught"
 
    def close_connection(self):
       self.s.close()
 
 
-   def shutdown(self):
+   def shut_down(self):
       self.s.shutdown()
 
    def connect_to(self, addr, message, ):
       s = self.s
       s.connect((addr, self.port_out))
 
-      #if(message == "sync")
-
-      """input_text = raw_input('Enter your command:')
-      isNotDone = True
-      while(isNotDone):
-         input_string = input_text.split(' ', 1)
-         if(input_string[0] == 'post'):
-            s.send(input_text)
-            print "Your message: " + input_string[1]
-            isNotDone = False
-         elif(input_string[0] == 'lookup'):
-            s.send(input_text)
-            print "MATTAFACKA"
-            isNotDone = False
-         elif(input_string[0] == 'sync'):
-            s.send(input_text)
-            print "sync with " + input_string[1]
-            isNotDone = False
-         else:
-            input_text = raw_input('Wrong argument. Use post, lookup or sync? ')"""
-
       s.close()
 
-#PROBLEM: HOW TO LISTEN FOR MESSAGES IN THE SAME TIME AS IT SHOULD BE ABLE TO SEND? CREATE SOME TYPE OF LISTENER?
-server = datacenter(0, 12345, 10000)
-threading.Thread(target=server.initialize_connection()).start()
+server = datacenter(0, 10000, 12345)
+
+def handler(signum, frame):
+   try:
+      print 'Ctrl+Z pressed'
+   finally:
+      server.close_connection()
+
+signal.signal(signal.SIGTSTP, handler)
+
+server.initialize_connection()
