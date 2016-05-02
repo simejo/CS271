@@ -60,8 +60,9 @@ class datacenter(object):
    def handle_sync_with_server(self):
       data = pickle.dumps(self.timeTable.getTimeTable())
       s = socket.socket()
-      s.connect((self.addr, self.port_out))
-      s.send("sync_time_table " + data)
+      print self.addr
+      s.connect((self.addr[0], self.port_out))
+      s.send(data)
       s.close()
 
    def handle_time_table(self, data):
