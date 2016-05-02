@@ -11,6 +11,9 @@ class Log(object):
 	def delete_in_log(self, event):
 		self.log.remove(event)
 
+	def getLog(self):
+		return self.log
+
 	def toString(self):
 		holder = ""
 		for event in self.log:

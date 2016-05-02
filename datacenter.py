@@ -57,11 +57,13 @@ class datacenter(object):
       print 'Handle sync with .... ' + str(d2)
 
    def handle_request_server_sync(self):
-      data = pickle.dumps(self.timeTable.getTimeTable())
+      time_table = pickle.dumps(self.timeTable.getTimeTable())
+      log = pickle.dumps(self.log.getLog())
       s = socket.socket()
       print self.addr
       s.connect((self.addr[0], self.port_out))
-      s.send("reply_server_sync " + data)
+      s.send("reply_server_sync_tt " + time_table)
+      s.send("reply_server_sync_log " + log)
       s.close()
 
    def handle_time_table(self, data):
@@ -79,11 +81,10 @@ class datacenter(object):
             self.handle_sync(input_string[1])
          elif (input_string[0] == 'request_server_sync'):
             self.handle_request_server_sync()
-         elif (input_string[0] == 'reply_server_sync'):
+         elif (input_string[0] == 'reply_server_sync_tt'):
             self.handle_time_table(input_string[1])
-         elif (input_string[0] == 'quit'):
-            self.s.close_connection()
-            self.s.shutdown()
+         elif (input_string[0] == 'reply_server_sync_log'):
+            self.handle_time_table(input_string[1])
       except Exception, e:
          print e
          print 'Something wrong happened. Server shutting down...'
@@ -120,7 +121,7 @@ class datacenter(object):
 
       s.close()
 
-server = datacenter(0, 10000, 12345)
+server = datacenter(0, 12345, 10000)
 
 def handler(signum, frame):
    try:
