@@ -20,7 +20,7 @@ class datacenter(object):
       self.addr = ''
       self.c = None
       self.log = log.Log()
-      self.dictionary = dictionary.Dicationary(node_id)
+      self.dictionary = dictionary.Dictionary(node_id)
 
    def handle_post(self, message):
       self.timeTable.tick()
