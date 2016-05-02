@@ -25,13 +25,12 @@ class datacenter(object):
       self.log = log.Log()
 
    def handle_post(self, message):
-      print "Handle Post .... " + str(message)
       self.timeTable.tick()
       time = self.timeTable.getTime() 
-      event = event.Event('post', input_string[1], time, self.node_id)
-      self.log.input_in_log(event)
+      e = event.Event('post', message, time, self.node_id)
+      self.log.input_in_log(e)
       print 'Loggen: '
-      print self.log
+      print self.log.toString()
       print 'Timetablen: '
       print self.timeTable.toString()
 
@@ -65,7 +64,6 @@ class datacenter(object):
    def check_message(self,message):
       try:
          input_string = message.split(' ', 1)
-         print input_string
          if (input_string[0] == "post"):
             self.handle_post(input_string[1])
          elif (input_string[0] == 'lookup'):

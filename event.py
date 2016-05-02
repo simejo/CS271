@@ -8,4 +8,4 @@ class Event(object):
 		self.content = content
 	
 	def toString(self):
-		return self.op, self.time, self.node, self.content
+		return str(self.op) + ", " + str(self.time) + ", " + str(self.node) + ", " + str(self.content)
