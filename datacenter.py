@@ -49,9 +49,6 @@ class datacenter(object):
          s.connect((d2, self.port_out))
          s.send("request_server_sync " + str(self.hostname))
          s.close()
-
-
-
          
       except Exception, e:
          print "Could not connect. " + str(e)
@@ -141,5 +138,5 @@ class datacenter(object):
       s.close()
 
 #PROBLEM: HOW TO LISTEN FOR MESSAGES IN THE SAME TIME AS IT SHOULD BE ABLE TO SEND? CREATE SOME TYPE OF LISTENER?
-server = datacenter(0, 10000, 12345)
+server = datacenter(0, 12345, 10000)
 threading.Thread(target=server.initialize_connection()).start()
