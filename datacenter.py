@@ -43,11 +43,11 @@ class datacenter(object):
       print 'Handle lookup ....'
 
    def handle_sync(self, d2):
-      #d2 is an IPadress
+      #d2 is an IPaddress
       try:
          s = socket.socket()
          s.connect((d2, self.port_out))
-         s.send("sync_server " + str(self.hostname))
+         s.send("request_server_sync " + str(self.hostname))
          s.close()
 
 
@@ -57,16 +57,40 @@ class datacenter(object):
          print "Could not connect. " + str(e)
       print 'Handle sync with .... ' + str(d2)
 
-   def handle_sync_with_server(self):
+   def handle_request_server_sync(self):
       data = pickle.dumps(self.timeTable.getTimeTable())
       s = socket.socket()
       print self.addr
       s.connect((self.addr[0], self.port_out))
-      s.send(data)
+      s.send("reply_server_sync " + data)
       s.close()
 
    def handle_time_table(self, data):
-      print data
+      time_table = pickle.loads(data)
+      print time_table
+
+   def check_message(self,message):
+      try:
+         input_string = message.split(' ', 1)
+         print input_string
+         if (input_string[0] == "post"):
+            self.handle_post(input_string[1])
+         elif (input_string[0] == 'lookup'):
+            self.handle_lookup()
+         elif (input_string[0] == 'sync'):
+            self.handle_sync(input_string[1])
+         elif (input_string[0] == 'request_server_sync'):
+            self.handle_request_server_sync()
+         elif (input_string[0] == 'reply_server_sync'):
+            self.handle_time_table(input_string[1])
+         elif (input_string[0] == 'quit'):
+            self.s.close_connection()
+            self.s.shutdown()
+            break
+      except Exception, e:
+         print e
+         print 'Something wrong happened. Server shutting down...'
+         break
 
    def initialize_connection(self):
       s = self.s
@@ -80,31 +104,9 @@ class datacenter(object):
          print 'Got connection from', addr
          c.send('Thank you for connecting')
          message = c.recv(1024)
-
-
-         try:
-            input_string = message.split(' ', 1)
-            print input_string
-            if (input_string[0] == "post"):
-               self.handle_post(input_string[1])
-            elif (input_string[0] == 'lookup'):
-               self.handle_lookup()
-            elif (input_string[0] == 'sync'):
-               self.handle_sync(input_string[1])
-            elif (input_string[0] == 'quit'):
-               s.close_connection()
-               s.shutdown()
-               break
-            elif (input_string[0] == 'sync_server'):
-               self.handle_sync_with_server()
-            elif (input_string[0] == 'sync_time_table'):
-               self.handle_time_table(input_string[1])
-         except Exception, e:
-            print e
-            print 'Something wrong happened. Server shutting down...'
-            c.close()
-            break
+         self.check_message(message)
          c.close()                # Close the connection
+
 
    def close_connection(self):
       self.s.close()
@@ -141,5 +143,5 @@ class datacenter(object):
       s.close()
 
 #PROBLEM: HOW TO LISTEN FOR MESSAGES IN THE SAME TIME AS IT SHOULD BE ABLE TO SEND? CREATE SOME TYPE OF LISTENER?
-server = datacenter(0, 12345, 10000)
+server = datacenter(0, 10000, 12345)
 threading.Thread(target=server.initialize_connection()).start()
