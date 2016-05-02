@@ -50,7 +50,7 @@ class datacenter(object):
          print "Could not connect. " + str(e)
       print 'Handle sync with .... ' + str(d2)
 
-   def handle_sync_with_server():
+   def handle_sync_with_server(self):
       print "SERVER SYNC"
 
    def initialize_connection(self):
@@ -67,6 +67,7 @@ class datacenter(object):
 
          try:
             input_string = message.split(' ', 1)
+            print input_string
             if (input_string[0] == "post"):
                self.handle_post(input_string[1])
             elif (input_string[0] == 'lookup'):
@@ -77,7 +78,7 @@ class datacenter(object):
                s.close_connection()
                break
             elif (input_string[0] == 'sync_server'):
-               self.handle_sync(input_string[1])
+               self.handle_sync_with_server()
          except Exception, e:
             print e
             print 'Something wrong happened. Server shutting down...'
