@@ -42,9 +42,9 @@ class datacenter(object):
    def handle_sync(self, d2):
       #d2 is an IPadress
       try:
-         s = self.s
+         s = socket.socket()
          s.connect((d2, self.port_out))
-         s.send("sync_server")
+         s.send("sync_server " + str(self.hostname))
          
       except Exception, e:
          print "Could not connect. " + str(e)
@@ -88,6 +88,10 @@ class datacenter(object):
    def close_connection(self):
       self.s.close()
 
+
+   def shutdown(self):
+      self.s.shutdown()
+
    def connect_to(self, addr, message, ):
       s = self.s
       s.connect((addr, self.port_out))
@@ -117,5 +121,5 @@ class datacenter(object):
 
 
 #PROBLEM: HOW TO LISTEN FOR MESSAGES IN THE SAME TIME AS IT SHOULD BE ABLE TO SEND? CREATE SOME TYPE OF LISTENER?
-server = datacenter(0, 12345, 10000)
+server = datacenter(0, 10000, 12345)
 threading.Thread(target=server.initialize_connection()).start()
