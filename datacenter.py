@@ -2,6 +2,7 @@ import socket               # Import socket module
 import timeTable
 import event
 import threading
+import json
 
 class Replicated_log(object):
    def __init__(self):
@@ -45,13 +46,24 @@ class datacenter(object):
          s = socket.socket()
          s.connect((d2, self.port_out))
          s.send("sync_server " + str(self.hostname))
+         s.close()
+
+
+
          
       except Exception, e:
          print "Could not connect. " + str(e)
       print 'Handle sync with .... ' + str(d2)
 
    def handle_sync_with_server(self):
-      print "SERVER SYNC"
+      data = json.dumps(self.timeTable)
+      s = socket.socket()
+      s.connect((d2, self.port_out))
+      s.send("sync_time_table " + data)
+      s.close()
+
+   def handle_time_table(self, data):
+      print data
 
    def initialize_connection(self):
       s = self.s
@@ -76,9 +88,12 @@ class datacenter(object):
                self.handle_sync(input_string[1])
             elif (input_string[0] == 'quit'):
                s.close_connection()
+               s.shutdown()
                break
             elif (input_string[0] == 'sync_server'):
                self.handle_sync_with_server()
+            elif (input_string[0] == 'sync_time_table'):
+               self.handle_time_table(input_string[1])
          except Exception, e:
             print e
             print 'Something wrong happened. Server shutting down...'
@@ -122,5 +137,5 @@ class datacenter(object):
 
 
 #PROBLEM: HOW TO LISTEN FOR MESSAGES IN THE SAME TIME AS IT SHOULD BE ABLE TO SEND? CREATE SOME TYPE OF LISTENER?
-server = datacenter(0, 10000, 12345)
+server = datacenter(0, 12345, 10000)
 threading.Thread(target=server.initialize_connection()).start()
