@@ -24,15 +24,15 @@ class datacenter(object):
 
    def handle_post(self, message):
       self.timeTable.tick()
-      time = self.timeTable.getTime() 
-      e = event.Event('post', message, time, self.node_id)
-      self.log.input_in_log(e)
       time = self.timeTable.getTime()
+      print 'Creating event...'
+      e = event.Event('post', message, time, self.node_id)
       # Update log 
-      event = event.Event('post', input_string[1], time, self.node_id)
-      self.log.input_in_log(event)
+      print 'Updating log...'
+      self.log.input_in_log(e)
       # Update dictionary
-      self.dictionary.input_in_dict(time, messaage)
+      print 'Updating dict'
+      self.dictionary.input_in_dict(time, message)
 
       print 'Loggen: '
       print self.log.toString()
