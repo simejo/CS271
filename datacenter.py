@@ -46,7 +46,7 @@ class datacenter(object):
          s.connect((d2, self.port_out))
          s.send("sync_server")
          
-      except Exception e:
+      except Exception, e:
          print "Could not connect. " + str(e)
       print 'Handle sync with .... ' + str(d2)
 
