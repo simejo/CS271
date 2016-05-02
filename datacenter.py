@@ -4,12 +4,9 @@ import event
 import threading
 import pickle
 import log
+import dictionary
 
 
-class ReplicatedDict(object):
-   def __init__(self):
-      self.dict = {}
-      
 
 
 class datacenter(object):
@@ -23,16 +20,27 @@ class datacenter(object):
       self.addr = ''
       self.c = None
       self.log = log.Log()
+      self.dictionary = dictionary.Dicationary(node_id)
 
    def handle_post(self, message):
       self.timeTable.tick()
       time = self.timeTable.getTime() 
       e = event.Event('post', message, time, self.node_id)
       self.log.input_in_log(e)
+      time = self.timeTable.getTime()
+      # Update log 
+      event = event.Event('post', input_string[1], time, self.node_id)
+      self.log.input_in_log(event)
+      # Update dictionary
+      self.dictionary.input_in_dict(time, messaage)
+
       print 'Loggen: '
       print self.log.toString()
       print 'Timetablen: '
       print self.timeTable.toString()
+      print 'Dicationary: '
+      self.dictionary.toString()
+
 
    def handle_lookup(self):
       print 'Handle lookup ....'
