@@ -104,7 +104,6 @@ class datacenter(object):
          self.check_message(message)
          c.close()                # Close the connection
 
-
    def close_connection(self):
       self.s.close()
 
