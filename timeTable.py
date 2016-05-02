@@ -26,6 +26,9 @@ class TimeTable(object):
     	for i in range(self.dim):
     		print self.table[i]
 
+    def getTimeTable(self):
+        return self.table
+
 
 
 

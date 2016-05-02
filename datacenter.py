@@ -2,7 +2,7 @@ import socket               # Import socket module
 import timeTable
 import event
 import threading
-import json
+import pickle
 
 class Replicated_log(object):
    def __init__(self):
@@ -31,6 +31,8 @@ class datacenter(object):
       self.hostname = socket.gethostname() # get local machine name
       self.port_in = port_in
       self.port_out = port_out
+      self.addr = ''
+      self.c = None
 
    def handle_post(self, message):
       print "Handle Post .... " + str(message)
@@ -56,9 +58,9 @@ class datacenter(object):
       print 'Handle sync with .... ' + str(d2)
 
    def handle_sync_with_server(self):
-      data = json.dumps(self.timeTable)
+      data = pickle.dumps(self.timeTable.getTimeTable())
       s = socket.socket()
-      s.connect((d2, self.port_out))
+      s.connect((self.addr, self.port_out))
       s.send("sync_time_table " + data)
       s.close()
 
@@ -72,6 +74,8 @@ class datacenter(object):
       while True:
          print "Server running... HOST: " + self.hostname
          c, addr = s.accept()     # Establish connection with client.
+         self.addr = addr
+         self.c = c
          print 'Got connection from', addr
          c.send('Thank you for connecting')
          message = c.recv(1024)
@@ -133,8 +137,7 @@ class datacenter(object):
          else:
             input_text = raw_input('Wrong argument. Use post, lookup or sync? ')"""
 
-      s.close
-
+      s.close()
 
 #PROBLEM: HOW TO LISTEN FOR MESSAGES IN THE SAME TIME AS IT SHOULD BE ABLE TO SEND? CREATE SOME TYPE OF LISTENER?
 server = datacenter(0, 12345, 10000)
