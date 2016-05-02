@@ -27,10 +27,12 @@ class datacenter(object):
    def handle_post(self, message):
       print "Handle Post .... " + str(message)
       self.timeTable.tick()
-      time = timeTable.getTime() 
+      time = self.timeTable.getTime() 
       event = event.Event('post', input_string[1], time, self.node_id)
       self.log.input_in_log(event)
+      print 'Loggen: '
       print self.log
+      print 'Timetablen: '
       print self.timeTable.toString()
 
    def handle_lookup(self):
