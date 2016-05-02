@@ -5,11 +5,7 @@ import threading
 import pickle
 import log
 import signal
-
-class ReplicatedDict(object):
-   def __init__(self):
-      self.dict = {}
-      
+import dictionary
 
 
 class datacenter(object):
@@ -23,15 +19,27 @@ class datacenter(object):
       self.addr = ''
       self.c = None
       self.log = log.Log()
+      self.dictionary = dictionary.Dictionary(node_id)
 
    def handle_post(self, message):
-      print "Handle Post .... " + str(message)
       self.timeTable.tick()
-      time = timeTable.getTime() 
+      time = self.timeTable.getTime() 
+      e = event.Event('post', message, time, self.node_id)
+      self.log.input_in_log(e)
+      time = self.timeTable.getTime()
+      # Update log 
       event = event.Event('post', input_string[1], time, self.node_id)
       self.log.input_in_log(event)
-      print self.log
+      # Update dictionary
+      self.dictionary.input_in_dict(time, messaage)
+
+      print 'Loggen: '
+      print self.log.toString()
+      print 'Timetablen: '
       print self.timeTable.toString()
+      print 'Dicationary: '
+      self.dictionary.toString()
+
 
    def handle_lookup(self):
       print 'Handle lookup ....'
@@ -63,7 +71,6 @@ class datacenter(object):
    def check_message(self,message):
       try:
          input_string = message.split(' ', 1)
-         print input_string
          if (input_string[0] == "post"):
             self.handle_post(input_string[1])
          elif (input_string[0] == 'lookup'):
@@ -99,7 +106,6 @@ class datacenter(object):
          except KeyboardInterrupt:
             self.shut_down
             print "KeyboardInterrupt caught"
-
 
    def close_connection(self):
       self.s.close()
