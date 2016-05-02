@@ -86,11 +86,9 @@ class datacenter(object):
          elif (input_string[0] == 'quit'):
             self.s.close_connection()
             self.s.shutdown()
-            break
       except Exception, e:
          print e
          print 'Something wrong happened. Server shutting down...'
-         break
 
    def initialize_connection(self):
       s = self.s
