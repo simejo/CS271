@@ -40,7 +40,18 @@ class datacenter(object):
       print 'Handle lookup ....'
 
    def handle_sync(self, d2):
+      #d2 is an IPadress
+      try:
+         s = self.s
+         s.connect((d2, self.port_out))
+         s.send("sync_server")
+         
+      except Exception e:
+         print "Could not connect. " + str(e)
       print 'Handle sync with .... ' + str(d2)
+
+   def handle_sync_with_server():
+      print "SERVER SYNC"
 
    def initialize_connection(self):
       s = self.s
@@ -65,6 +76,8 @@ class datacenter(object):
             elif (input_string[0] == 'quit'):
                s.close_connection()
                break
+            elif (input_string[0] == 'sync_server'):
+               self.handle_sync(input_string[1])
          except Exception, e:
             print e
             print 'Something wrong happened. Server shutting down...'
@@ -75,11 +88,13 @@ class datacenter(object):
    def close_connection(self):
       self.s.close()
 
-   def connect_to(self, addr):
-      s = socket.socket()
+   def connect_to(self, addr, message, ):
+      s = self.s
       s.connect((addr, self.port_out))
 
-      input_text = raw_input('Enter your command:')
+      #if(message == "sync")
+
+      """input_text = raw_input('Enter your command:')
       isNotDone = True
       while(isNotDone):
          input_string = input_text.split(' ', 1)
@@ -96,12 +111,11 @@ class datacenter(object):
             print "sync with " + input_string[1]
             isNotDone = False
          else:
-            input_text = raw_input('Wrong argument. Use post, lookup or sync? ')
+            input_text = raw_input('Wrong argument. Use post, lookup or sync? ')"""
 
       s.close
 
 
 #PROBLEM: HOW TO LISTEN FOR MESSAGES IN THE SAME TIME AS IT SHOULD BE ABLE TO SEND? CREATE SOME TYPE OF LISTENER?
-server = datacenter(0,10000, 12345)
-#threading.Thread(target=server.connect_to('169.231.121.215')).start()
+server = datacenter(0, 12345, 10000)
 threading.Thread(target=server.initialize_connection()).start()
