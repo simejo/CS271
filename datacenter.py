@@ -66,6 +66,7 @@ class datacenter(object):
       s.close()
 
    def handle_time_table(self, data):
+      print "handle_time_table()"
       t2 = pickle.loads(data)
       self.timeTable.synchronize_tt(t2)
       print self.timeTable.toString()
