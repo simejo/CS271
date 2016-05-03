@@ -36,6 +36,8 @@ class datacenter(object):
    def handle_lookup(self, addr):
       print "------ Dictionary ------"
       print self.dictionary.toString()
+      print "------ Lookup ------"
+      print self.log.toString()
 
       return self.dictionary.toString()
 
@@ -82,23 +84,15 @@ class datacenter(object):
             self.dictionary.updateDictionary(timestamp, nodeId, event.getContent())
 
    def extend_log(self, log):
-      l2 = pickle.loads(log)
-      print "----- RECEIVED LOG ------"
       print l2.toString()
       self.log.extendLog(l2)
-      print "----- EXTENDED LOG ------"
-      print self.log.toString()
 
    def garbage_log(self):
-      print "----- Log before garbage -----"
-      print self.log.toString()
       for col in range(self.timeTable.getDim()):
          column = self.timeTable.getColumn(col)
          min_num = min(column)
          if(min_num > 0):
             self.log.delete_n_events_with_node_id_nid(min_num, col)
-      print "----- Log after garbage -----"
-      print self.log.toString()
 
    def initialize_connection(self):
       s = self.s
