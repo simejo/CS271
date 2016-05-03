@@ -67,8 +67,8 @@ class datacenter(object):
       s.close()
 
    def handle_time_table(self, data):
-      (node_id, time_table) = pickle.loads(data)
-
+      t2 = pickle.loads(data)
+      self.time_table.synchronize_tt(t2)
 
       print time_table
 
@@ -130,7 +130,7 @@ class datacenter(object):
 
       s.close()
 
-server = datacenter(0, 12345, 10000)
+server = datacenter(1, 10000, 12345)
 
 def handler(signum, frame):
    try:
