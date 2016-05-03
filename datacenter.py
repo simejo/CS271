@@ -28,12 +28,18 @@ class datacenter(object):
       e = event.Event('post', message, time, self.node_id)
       self.log.input_in_log(e)
       self.dictionary.input_in_dict(time, message)
+      print self.dictionary.toString()
 
 
-   def handle_lookup(self):
-      print 'Handle lookup ....'
-
-      #s.send(self.dictionary.toString())
+   def handle_lookup(self, addr):
+      """s = socket.socket()
+      print addr
+      s.connect(addr)
+      print "sending = " +  self.dictionary.toString()
+      s.send(self.dictionary.toString())
+      s.close()
+      #"""
+      return self.dictionary.toString()
 
 
    def handle_sync(self, d2):
@@ -90,7 +96,7 @@ class datacenter(object):
          if(min_num > 0):
             self.log.delete_n_events_with_node_id_nid(min_num, col)
 
-   def check_message(self,message):
+   """def check_message(self,message):
       try:
          input_string = message.split(' ', 1)
          if (input_string[0] == "post"):
@@ -110,7 +116,7 @@ class datacenter(object):
       except Exception, e:
          print e
          print 'Something wrong happened. Server shutting down...'
-
+"""
    def initialize_connection(self):
       s = self.s
       s.bind((self.hostname, self.port_in))
@@ -118,9 +124,7 @@ class datacenter(object):
       while True:
          print "Server running... HOST: " + self.hostname
          c, addr = s.accept()     # Establish connection with client.
-         print 'Got connection from', addr
-         c.send('Thank you for connecting')
-         
+         print 'Got connection from', addr       
          client = ClientHandler(c, addr, self)
          client.start()
          self.threads.append(client)
@@ -132,16 +136,16 @@ class datacenter(object):
    def close_connection(self):
       self.s.close()
 
-class ClientHandler(object):
+class ClientHandler(threading.Thread):
    def __init__(self, c, addr, server):
       threading.Thread.__init__(self)
       self.c = c
       self.addr = addr
       self.size = 1024
       self.server = server
-      print 'Got connection from', self.addr
 
    def run(self):
+      print "INSIDE RUUUUNNNNNN"
       self.c.send('Thank you for connecting')
       running = True
       while running:
@@ -159,7 +163,8 @@ class ClientHandler(object):
          if (input_string[0] == "post"):
             self.server.handle_post(input_string[1])
          elif (input_string[0] == 'lookup'):
-            self.server.handle_lookup()
+            dictionary = self.server.handle_lookup(self.addr)
+            self.c.send(dictionary)
          elif (input_string[0] == 'sync'):
             self.server.handle_sync(input_string[1])
          elif (input_string[0] == 'request_server_sync'):

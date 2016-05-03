@@ -11,6 +11,7 @@ class Client(object):
 	def start_connection(self, addr):
 		s = self.s
 		s.connect((addr, self.port))
+		s.recv(1024)
 		isNotDone = True
 		while(isNotDone):
 			input_text = raw_input('Enter your command:')
@@ -18,15 +19,12 @@ class Client(object):
 			if(input_string[0] == 'post'):
 				s.send(input_text)
 				print "Your message: " + input_string[1]
-				isNotDone = True
 			elif(input_string[0] == 'lookup'):
 				s.send(input_text)
-				print "MATTAFACKA"
-				isNotDone = True
+				s.recv(1024)
 			elif(input_string[0] == 'sync'):
 				s.send(input_text)
 				print "sync with " + input_string[1]
-				isNotDone = True
 			elif(input_string[0] == 'close'):
 				print "closing connection"
 				isNotDone = False
