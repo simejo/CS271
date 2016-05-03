@@ -11,25 +11,27 @@ class Client(object):
 	def start_connection(self, addr):
 		s = self.s
 		s.connect((addr, self.port))
-
-		input_text = raw_input('Enter your command:')
 		isNotDone = True
 		while(isNotDone):
+			input_text = raw_input('Enter your command:')
 			input_string = input_text.split(' ', 1)
 			if(input_string[0] == 'post'):
 				s.send(input_text)
 				print "Your message: " + input_string[1]
-				isNotDone = False
+				isNotDone = True
 			elif(input_string[0] == 'lookup'):
 				s.send(input_text)
 				print "MATTAFACKA"
-				isNotDone = False
+				isNotDone = True
 			elif(input_string[0] == 'sync'):
 				s.send(input_text)
 				print "sync with " + input_string[1]
+				isNotDone = True
+			elif(input_string[0] == 'close'):
+				print "closing connection"
 				isNotDone = False
 			else:
-				input_text = raw_input('Wrong argument. Use post, lookup or sync ')
+				input_text = raw_input('Wrong argument. Use post, lookup or sync. "close" to close connection')
 
 
 		s.close()

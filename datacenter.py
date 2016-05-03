@@ -40,7 +40,8 @@ class datacenter(object):
 
    def handle_lookup(self):
       print 'Handle lookup ....'
-      s.send(self.dictionary.toString())
+
+      #s.send(self.dictionary.toString())
 
 
    def handle_sync(self, d2):
