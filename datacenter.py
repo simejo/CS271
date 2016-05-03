@@ -20,22 +20,14 @@ class datacenter(object):
       self.c = None
       self.log = log.Log()
       self.dictionary = dictionary.Dictionary(node_id)
+      self.threads = []
 
    def handle_post(self, message):
       self.timeTable.tick()
       time = self.timeTable.getTime()
       e = event.Event('post', message, time, self.node_id)
-      # Update log 
       self.log.input_in_log(e)
-      # Update dictionary
       self.dictionary.input_in_dict(time, message)
-
-      print 'The log: '
-      print self.log.toString()
-      print 'The time table: '
-      print self.timeTable.toString()
-      print 'The dictionary: '
-      print self.dictionary.toString()
 
 
    def handle_lookup(self):
@@ -126,16 +118,64 @@ class datacenter(object):
       while True:
          print "Server running... HOST: " + self.hostname
          c, addr = s.accept()     # Establish connection with client.
-         self.addr = addr
-         self.c = c
          print 'Got connection from', addr
          c.send('Thank you for connecting')
-         message = c.recv(1024)
-         self.check_message(message)
-         c.close()                # Close the connection
+         
+         client = ClientHandler(c, addr, self)
+         client.start()
+         self.threads.append(client)
+
+      self.s.close()
+      for client in self.threads:
+         client.join()
 
    def close_connection(self):
       self.s.close()
+
+class ClientHandler(object):
+   def __init__(self, c, addr, server):
+      threading.Thread.__init__(self)
+      self.c = c
+      self.addr = addr
+      self.size = 1024
+      self.server = server
+      print 'Got connection from', self.addr
+
+   def run(self):
+      self.c.send('Thank you for connecting')
+      running = True
+      while running:
+         message = self.c.recv(self.size)
+         if message:
+            self.check_message(message)
+         else:
+            self.c.close()
+            running = False
+
+
+   def check_message(self,message):
+      try:
+         input_string = message.split(' ', 1)
+         if (input_string[0] == "post"):
+            self.server.handle_post(input_string[1])
+         elif (input_string[0] == 'lookup'):
+            self.server.handle_lookup()
+         elif (input_string[0] == 'sync'):
+            self.server.handle_sync(input_string[1])
+         elif (input_string[0] == 'request_server_sync'):
+            self.server.handle_request_server_sync()
+         elif (input_string[0] == 'reply_server_sync_tt'):
+            self.server.handle_time_table(input_string[1])
+         elif (input_string[0] == 'reply_server_sync_log'):
+            self.server.extend_log(input_string[1])
+            self.server.update_dictionary()
+            self.server.garbage_log(input_string[1])
+      except Exception, e:
+         print e
+         print 'Something wrong happened. Server shutting down...'
+
+
+
 
 server = datacenter(0, 12345, 10000)
 
