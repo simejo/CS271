@@ -36,4 +36,5 @@ class Client(object):
 		s.close()
 
 client = Client(12345)
-client.start_connection('128.111.43.22') #Input is the IP address to the one you want to connect to
+#client.start_connection('128.111.43.22') #Input is the IP address to the one you want to connect to
+client.start_connection('169.231.112.214') #Input is the IP address to the one you want to connect to

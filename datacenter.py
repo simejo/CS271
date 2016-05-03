@@ -8,11 +8,12 @@ import signal
 import dictionary
 
 
+
 class datacenter(object):
-   def __init__(self, node_id, port):
+   def __init__(self, node_id, port, num_dc):
       self.node_id = node_id
       self.s = socket.socket()
-      self.timeTable = timeTable.TimeTable(2,node_id)
+      self.timeTable = timeTable.TimeTable(num_dc,node_id)
       self.hostname = socket.gethostname() # get local machine name
       self.port = port
       self.addr = ''
@@ -50,24 +51,25 @@ class datacenter(object):
          s = socket.socket()
          s.connect((d2, self.port))
          s.send("request_server_sync " + str(self.hostname))
+         self.handle_request_server_sync(d2)
          s.close()
          
       except Exception, e:
          print "Could not connect. " + str(e)
       print 'Handle sync with .... ' + str(d2)
 
-   def handle_request_server_sync(self,s2):
+   def handle_request_server_sync(self,d1):
       print 'handle_server_sync()'
       time_table = pickle.dumps(self.timeTable)
       log = pickle.dumps(self.log)
       s = socket.socket()
-      print 'self.addr', s2.addr
-      s.connect((s2.addr[0], self.port))
+      print 'self.addr', d1.addr
+      s.connect((d1.addr[0], self.port))
       print 's.connected worked'
       s.send("reply_server_sync_tt " + time_table)
       s.close()
       s = socket.socket()
-      s.connect((s2.addr[0], self.port))
+      s.connect((d1.addr[0], self.port))
       s.send("reply_server_sync_log " + log)
       s.close()
 
@@ -187,8 +189,9 @@ class ClientHandler(threading.Thread):
 
 
 
+num_dc = raw_input('Number of datacenters: ')
+server = datacenter(1, 12345, int(num_dc))
 
-server = datacenter(1, 12345)
 
 def handler(signum, frame):
    try:
