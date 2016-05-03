@@ -30,11 +30,13 @@ class Client(object):
 				print "closing connection"
 				isNotDone = False
 			else:
-				input_text = raw_input('Wrong argument. Use post, lookup or sync. "close" to close connection')
+				print 'Wrong argument. Use post, lookup or sync. "close" to close connection'
 
 
 		s.close()
 
 client = Client(12345)
+
+client.start_connection('128.111.43.40') #Input is the IP address to the one you want to connect to
 #client.start_connection('128.111.43.22') #Input is the IP address to the one you want to connect to
-client.start_connection('169.231.112.214') #Input is the IP address to the one you want to connect to
+#client.start_connection('169.231.112.214') #Input is the IP address to the one you want to connect to
