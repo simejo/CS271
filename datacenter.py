@@ -28,24 +28,20 @@ class datacenter(object):
       e = event.Event('post', message, time, self.node_id)
       self.log.input_in_log(e)
       self.dictionary.input_in_dict(time, message)
+      print "------ Time Table ------"
+      print self.timeTable.toString()
+      print "------ Dictionary ------"
       print self.dictionary.toString()
 
    def handle_lookup(self, addr):
-      """s = socket.socket()
-      print addr
-      s.connect(addr)
-      print "sending = " +  self.dictionary.toString()
-      s.send(self.dictionary.toString())
-      s.close()
-      #"""
-      print "sending = " +  self.dictionary.toString()
+      print "------ Dictionary ------"
+      print self.dictionary.toString()
 
       return self.dictionary.toString()
 
 
    def handle_sync(self, d2):
       #d2 is an IPaddress
-      print 'handle_sync()'
       try:
          s = socket.socket()
          s.connect((d2, self.port))
@@ -58,13 +54,10 @@ class datacenter(object):
       print 'Handle sync with .... ' + str(d2)
 
    def handle_request_server_sync(self,d1):
-      print 'handle_server_sync()'
       time_table = pickle.dumps(self.timeTable)
       log = pickle.dumps(self.log)
       s = socket.socket()
-      print 'self.addr', d1.addr
       s.connect((d1.addr[0], self.port))
-      print 's.connected worked'
       s.send("reply_server_sync_tt " + time_table)
       s.close()
       s = socket.socket()
@@ -83,45 +76,25 @@ class datacenter(object):
          timestamp = event.getTime()
          nodeId = event.getNodeId()
          # This is for POST
-         print "TIMESTAMP NODEID"
          print timestamp, nodeId
          if (timestamp, nodeId) not in self.dictionary.getDictionary():
-            print "IN UPDATE: DO IT"
             self.dictionary.updateDictionary(timestamp, nodeId, event.getContent())
-
 
    def extend_log(self, log):
       l2 = pickle.loads(log)
       self.log.extendLog(l2)
 
-   def garbage_log(self, log):
+   def garbage_log(self):
+      print "----- Log before garbage -----"
+      print self.log.toString()
       for col in range(self.timeTable.getDim()):
          column = self.timeTable.getColumn(col)
          min_num = min(column)
          if(min_num > 0):
             self.log.delete_n_events_with_node_id_nid(min_num, col)
+      print "----- Log after garbage -----"
+      print self.log.toString()
 
-   """def check_message(self,message):
-      try:
-         input_string = message.split(' ', 1)
-         if (input_string[0] == "post"):
-            self.handle_post(input_string[1])
-         elif (input_string[0] == 'lookup'):
-            self.handle_lookup()
-         elif (input_string[0] == 'sync'):
-            self.handle_sync(input_string[1])
-         elif (input_string[0] == 'request_server_sync'):
-            self.handle_request_server_sync()
-         elif (input_string[0] == 'reply_server_sync_tt'):
-            self.handle_time_table(input_string[1])
-         elif (input_string[0] == 'reply_server_sync_log'):
-            self.extend_log(input_string[1])
-            self.update_dictionary()
-            self.garbage_log(input_string[1])
-      except Exception, e:
-         print e
-         print 'Something wrong happened. Server shutting down...'
-"""
    def initialize_connection(self):
       s = self.s
       s.bind((self.hostname, self.port))
@@ -150,7 +123,6 @@ class ClientHandler(threading.Thread):
       self.server = server
 
    def run(self):
-      print "INSIDE RUUUUNNNNNN"
       self.c.send('Thank you for connecting')
       running = True
       while running:
@@ -169,8 +141,6 @@ class ClientHandler(threading.Thread):
             self.server.handle_post(input_string[1])
          elif (input_string[0] == 'lookup'):
             dictionary = self.server.handle_lookup(self.addr)
-            print "sending check_message = " +  dictionary
-
             self.c.send(dictionary)
          elif (input_string[0] == 'sync'):
             self.server.handle_sync(input_string[1])
@@ -181,7 +151,7 @@ class ClientHandler(threading.Thread):
          elif (input_string[0] == 'reply_server_sync_log'):
             self.server.extend_log(input_string[1])
             self.server.update_dictionary()
-            self.server.garbage_log(input_string[1])
+            self.server.garbage_log()
       except Exception, e:
          print e
          print 'Something wrong happened. Server shutting down...'
@@ -189,7 +159,7 @@ class ClientHandler(threading.Thread):
 
 
 num_dc = raw_input('Number of datacenters: ')
-server = datacenter(1, 12345, int(num_dc))
+server = datacenter(2, 12345, int(num_dc))
 
 
 def handler(signum, frame):
