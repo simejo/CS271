@@ -83,7 +83,11 @@ class datacenter(object):
 
    def extend_log(self, log):
       l2 = pickle.loads(log)
+      print "----- RECEIVED LOG ------"
+      print l2.toString()
       self.log.extendLog(l2)
+      print "----- EXTENDED LOG ------"
+      print self.log.toString()
 
    def garbage_log(self):
       print "----- Log before garbage -----"

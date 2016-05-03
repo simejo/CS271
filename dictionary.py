@@ -12,9 +12,9 @@ class Dictionary(object):
 
 
 	def updateDictionary(self, timestamp, node_id, content):
-		self.dict.append("[(" + str(timestamp) + ", "  + str(node_id) + ")] : " + str(content))
-
-	#Tuples are by default sorted by their first element (and if those are the same, then by the second, and so on), so no special key function is required
+		input_data = "[(" + str(timestamp) + ", "  + str(self.node_id) + ")] : " + str(content)
+		if(input_data not in self.dict):
+			self.dict.append("[(" + str(timestamp) + ", "  + str(self.node_id) + ")] : " + str(content))
 	
 	def getDictionary(self):
 		return self.dict
