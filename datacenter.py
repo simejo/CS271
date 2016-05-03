@@ -39,6 +39,8 @@ class datacenter(object):
       s.send(self.dictionary.toString())
       s.close()
       #"""
+      print "sending = " +  self.dictionary.toString()
+
       return self.dictionary.toString()
 
 
@@ -164,6 +166,8 @@ class ClientHandler(threading.Thread):
             self.server.handle_post(input_string[1])
          elif (input_string[0] == 'lookup'):
             dictionary = self.server.handle_lookup(self.addr)
+            print "sending check_message = " +  dictionary
+
             self.c.send(dictionary)
          elif (input_string[0] == 'sync'):
             self.server.handle_sync(input_string[1])

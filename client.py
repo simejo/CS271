@@ -11,7 +11,7 @@ class Client(object):
 	def start_connection(self, addr):
 		s = self.s
 		s.connect((addr, self.port))
-		s.recv(1024)
+		print s.recv(1024)
 		isNotDone = True
 		while(isNotDone):
 			input_text = raw_input('Enter your command:')
@@ -21,7 +21,8 @@ class Client(object):
 				print "Your message: " + input_string[1]
 			elif(input_string[0] == 'lookup'):
 				s.send(input_text)
-				s.recv(1024)
+				received_dictionary = s.recv(1024)
+				print received_dictionary
 			elif(input_string[0] == 'sync'):
 				s.send(input_text)
 				print "sync with " + input_string[1]
