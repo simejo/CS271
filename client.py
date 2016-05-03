@@ -32,7 +32,7 @@ class Client(object):
 				input_text = raw_input('Wrong argument. Use post, lookup or sync ')
 
 
-		s.close
+		s.close()
 
 client = Client(12345)
 client.start_connection('128.111.43.22') #Input is the IP address to the one you want to connect to

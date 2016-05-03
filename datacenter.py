@@ -40,6 +40,8 @@ class datacenter(object):
 
    def handle_lookup(self):
       print 'Handle lookup ....'
+      s.send(self.dictionary.toString())
+
 
    def handle_sync(self, d2):
       #d2 is an IPaddress
@@ -71,22 +73,29 @@ class datacenter(object):
       self.timeTable.synchronize_tt(t2)
       print self.timeTable.toString()
 
+   def update_dictionary(self):
+      # NB: Watch up for DELETE events. May already have deleted the event, so we can not delete it
+      for event in self.log.getLog():
+         timestamp = event.getTime()
+         nodeId = event.getNodeId()
+         # This is for POST
+         print "TIMESTAMP NODEID"
+         print timestamp, nodeId
+         if (timestamp, nodeId) not in self.dictionary.getDictionary():
+            print "IN UPDATE: DO IT"
+            self.dictionary.updateDictionary(timestamp, nodeId, event.getContent())
 
-   def handle_log(self, log):
+
+   def extend_log(self, log):
       l2 = pickle.loads(log)
       self.log.extendLog(l2)
 
-      print "RECEIVED AND MERGED LOG"
-      print self.log.toString()
-
+   def garbage_log(self, log):
       for col in range(self.timeTable.getDim()):
          column = self.timeTable.getColumn(col)
          min_num = min(column)
          if(min_num > 0):
             self.log.delete_n_events_with_node_id_nid(min_num, col)
-
-      print "NEW LOG"
-      print self.log.toString()
 
    def check_message(self,message):
       try:
@@ -100,11 +109,11 @@ class datacenter(object):
          elif (input_string[0] == 'request_server_sync'):
             self.handle_request_server_sync()
          elif (input_string[0] == 'reply_server_sync_tt'):
-            print "CHECK MESSAGE : SYNC TT"
             self.handle_time_table(input_string[1])
          elif (input_string[0] == 'reply_server_sync_log'):
-            print "CHECK MESSAGE : SYNC LOG"
-            self.handle_log(input_string[1])
+            self.extend_log(input_string[1])
+            self.update_dictionary()
+            self.garbage_log(input_string[1])
       except Exception, e:
          print e
          print 'Something wrong happened. Server shutting down...'
@@ -114,34 +123,20 @@ class datacenter(object):
       s.bind((self.hostname, self.port_in))
       s.listen(5)
       while True:
-         try:
-            print "Server running... HOST: " + self.hostname
-            c, addr = s.accept()     # Establish connection with client.
-            self.addr = addr
-            self.c = c
-            print 'Got connection from', addr
-            c.send('Thank you for connecting')
-            message = c.recv(1024)
-            self.check_message(message)
-            c.close()                # Close the connection
-         except KeyboardInterrupt:
-            self.shut_down
-            print "KeyboardInterrupt caught"
+         print "Server running... HOST: " + self.hostname
+         c, addr = s.accept()     # Establish connection with client.
+         self.addr = addr
+         self.c = c
+         print 'Got connection from', addr
+         c.send('Thank you for connecting')
+         message = c.recv(1024)
+         self.check_message(message)
+         c.close()                # Close the connection
 
    def close_connection(self):
       self.s.close()
 
-
-   def shut_down(self):
-      self.s.shutdown()
-
-   def connect_to(self, addr, message, ):
-      s = self.s
-      s.connect((addr, self.port_out))
-
-      s.close()
-
-server = datacenter(1, 10000, 12345)
+server = datacenter(0, 12345, 10000)
 
 def handler(signum, frame):
    try:

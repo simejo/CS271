@@ -12,3 +12,9 @@ class Event(object):
 
 	def getNodeId(self):
 		return self.node_id
+	
+	def getTime(self):
+		return self.time
+	
+	def getContent(self):
+		return self.content
