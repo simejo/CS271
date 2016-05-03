@@ -54,8 +54,8 @@ class datacenter(object):
       print 'Handle sync with .... ' + str(d2)
 
    def handle_request_server_sync(self):
-      time_table = pickle.dumps(self.timeTable.getTimeTable())
-      log = pickle.dumps(self.log.getLog())
+      time_table = pickle.dumps(self.timeTable)
+      log = pickle.dumps(self.log)
       s = socket.socket()
       print self.addr
       s.connect((self.addr[0], self.port_out))
@@ -68,12 +68,21 @@ class datacenter(object):
 
    def handle_time_table(self, data):
       t2 = pickle.loads(data)
-      self.time_table.synchronize_tt(t2)
+      self.timeTable.synchronize_tt(t2)
+      print self.timeTable.toString()
 
-      print time_table
 
-   def handle_log(self, log):
-      log = pickle.loads(log)
+   def handle_log(self, l2):
+      l2 = pickle.loads(log)
+      self.log.extendLog(l2)
+
+      for col in range(len(self.timeTable.getDim())):
+         column = self.timeTable.getColumn(col)
+         # NEED MIN
+         min_num = min(column)
+         if(min_num > 0):
+            self.log.delete_n_events_with_node_id_nid(min_num, col)
+
       for x in log:
          print x.toString()
 
@@ -130,7 +139,7 @@ class datacenter(object):
 
       s.close()
 
-server = datacenter(1, 10000, 12345)
+server = datacenter(0, 12345, 10000)
 
 def handler(signum, frame):
    try:

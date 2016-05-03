@@ -17,18 +17,24 @@ class TimeTable(object):
     # Synchronize
     def synchronize_tt(self, t2):
         for i in range(self.dim):
-            self.table[self.node_id][i] = t2.table[t2.node_id][i]
+            self.table[self.node_id][i] = max(t2.table[t2.node_id][i], self.table[self.node_id][i])
     	for i in range(self.dim):
     		for j in range(self.dim):
-    			self.table[i][j] = max(self.table[i][j], t2[i][j])
+    			self.table[i][j] = max(self.table[i][j], t2.table[i][j])
 
     def toString(self):
     	for i in range(self.dim):
     		print self.table[i]
 
+    def getColumn(self, c):
+        return [row[c] for row in self.table]
+
     def getTimeTable(self):
         #return (self.node_id, self.table)
         return self
+
+    def getDim(self):
+        return self.dim
 
     def getNodeId(self):
         return self.node_id
