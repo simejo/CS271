@@ -30,7 +30,6 @@ class datacenter(object):
       self.dictionary.input_in_dict(time, message)
       print self.dictionary.toString()
 
-
    def handle_lookup(self, addr):
       """s = socket.socket()
       print addr
