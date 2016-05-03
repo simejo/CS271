@@ -67,12 +67,15 @@ class datacenter(object):
       s.close()
 
    def handle_time_table(self, data):
-      time_table = pickle.loads(data)
+      (node_id, time_table) = pickle.loads(data)
+
+
       print time_table
 
    def handle_log(self, log):
       log = pickle.loads(log)
-      print log
+      for x in log:
+         print x.toString()
 
    def check_message(self,message):
       try:
@@ -127,7 +130,7 @@ class datacenter(object):
 
       s.close()
 
-server = datacenter(0, 10000, 12345)
+server = datacenter(0, 12345, 10000)
 
 def handler(signum, frame):
    try:

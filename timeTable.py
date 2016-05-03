@@ -27,8 +27,10 @@ class TimeTable(object):
     		print self.table[i]
 
     def getTimeTable(self):
-        return self.table
+        return (self.node_id, self.table)
 
+    def getNodeId(self):
+        return self.node_id
 
     def getTime(self):
         return self.table[self.node_id][self.node_id]
