@@ -43,6 +43,11 @@ class datacenter(object):
 
       return self.dictionary.toString()
 
+   def start_connection_with_datacenter(self, d2):
+      s = socket.socket()
+      s.connect((d2, self.port))
+      s.send("request_server_sync " + str(self.hostname))
+      return s
 
    def handle_sync(self, d2):
       #d2 is an IPaddress
@@ -72,6 +77,12 @@ class datacenter(object):
       s.connect((d1.addr[0], self.port))
       s.send("reply_server_sync_log " + log)
       s.close()
+
+   def generate_tt_to_send(self):
+      return pickle.dumps(self.timeTable)
+
+   def generate_log_to_send(self):
+      return pickle.dumps(self.log)
 
    def handle_time_table(self, data):
       t2 = pickle.loads(data)
@@ -170,19 +181,31 @@ class ClientHandler(threading.Thread):
             self.server.handle_post(input_string[1])
          elif (input_string[0] == 'lookup'):
             dictionary = self.server.handle_lookup(self.addr)
-            print "sending check_message = " +  dictionary
-
             self.c.send(dictionary)
          elif (input_string[0] == 'sync'):
-            self.server.handle_sync(input_string[1])
+            #self.server.handle_sync(input_string[1])
+            server_socket = self.server.start_connection_with_datacenter(input_string[1])
+            time_table = server_socket.recv(self.size)
+            log = server_socket.recv(self.size)
+            #Handle time table
+            self.server.handle_time_table(time_table)
+            #Handle log
+            self.server.extend_log(log)
+            self.server.update_dictionary()
+            self.server.garbage_log(log)
+
          elif (input_string[0] == 'request_server_sync'):
-            self.server.handle_request_server_sync(self)
-         elif (input_string[0] == 'reply_server_sync_tt'):
+            #self.server.handle_request_server_sync(self)
+            time_table = self.server.generate_tt_to_send()
+            log = self.server.generate_log_to_send()
+            self.c.send(time_table)
+            self.c.send(log)
+         """elif (input_string[0] == 'reply_server_sync_tt'):
             self.server.handle_time_table(input_string[1])
          elif (input_string[0] == 'reply_server_sync_log'):
             self.server.extend_log(input_string[1])
             self.server.update_dictionary()
-            self.server.garbage_log(input_string[1])
+            self.server.garbage_log(input_string[1])"""
       except Exception, e:
          print e
          print 'Something wrong happened. Server shutting down...'
@@ -190,7 +213,7 @@ class ClientHandler(threading.Thread):
 
 
 num_dc = raw_input('Number of datacenters: ')
-server = datacenter(1, 12345, int(num_dc))
+server = datacenter(2, 12345, int(num_dc))
 
 
 def handler(signum, frame):
