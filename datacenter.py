@@ -24,21 +24,18 @@ class datacenter(object):
    def handle_post(self, message):
       self.timeTable.tick()
       time = self.timeTable.getTime()
-      print 'Creating event...'
       e = event.Event('post', message, time, self.node_id)
       # Update log 
-      print 'Updating log...'
       self.log.input_in_log(e)
       # Update dictionary
-      print 'Updating dict'
       self.dictionary.input_in_dict(time, message)
 
-      print 'Loggen: '
+      print 'The log: '
       print self.log.toString()
-      print 'Timetablen: '
+      print 'The time table: '
       print self.timeTable.toString()
-      print 'Dicationary: '
-      self.dictionary.toString()
+      print 'The dictionary: '
+      print self.dictionary.toString()
 
 
    def handle_lookup(self):
@@ -70,6 +67,10 @@ class datacenter(object):
       time_table = pickle.loads(data)
       print time_table
 
+   def handle_log(self, log):
+      log = pickle.loads(log)
+      print log
+
    def check_message(self,message):
       try:
          input_string = message.split(' ', 1)
@@ -82,9 +83,11 @@ class datacenter(object):
          elif (input_string[0] == 'request_server_sync'):
             self.handle_request_server_sync()
          elif (input_string[0] == 'reply_server_sync_tt'):
+            print "CHECK MESSAGE : SYNC TT"
             self.handle_time_table(input_string[1])
          elif (input_string[0] == 'reply_server_sync_log'):
-            self.handle_time_table(input_string[1])
+            print "CHECK MESSAGE : SYNC LOG"
+            self.handle_log(input_string[1])
       except Exception, e:
          print e
          print 'Something wrong happened. Server shutting down...'
@@ -121,7 +124,7 @@ class datacenter(object):
 
       s.close()
 
-server = datacenter(0, 12345, 10000)
+server = datacenter(0, 10000, 12345)
 
 def handler(signum, frame):
    try:
