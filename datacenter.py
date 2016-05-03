@@ -46,6 +46,7 @@ class datacenter(object):
 
    def handle_sync(self, d2):
       #d2 is an IPaddress
+      print 'handle_sync()'
       try:
          s = socket.socket()
          s.connect((d2, self.port_out))
@@ -56,16 +57,18 @@ class datacenter(object):
          print "Could not connect. " + str(e)
       print 'Handle sync with .... ' + str(d2)
 
-   def handle_request_server_sync(self):
+   def handle_request_server_sync(self,s2):
+      print 'handle_server_sync()'
       time_table = pickle.dumps(self.timeTable)
       log = pickle.dumps(self.log)
       s = socket.socket()
-      print self.addr
-      s.connect((self.addr[0], self.port_out))
+      print 'self.addr', s2.addr
+      s.connect((s2.addr[0], self.port_out))
+      print 's.connected worked'
       s.send("reply_server_sync_tt " + time_table)
       s.close()
       s = socket.socket()
-      s.connect((self.addr[0], self.port_out))
+      s.connect((s2.addr[0], self.port_out))
       s.send("reply_server_sync_log " + log)
       s.close()
 
@@ -143,7 +146,7 @@ class ClientHandler(threading.Thread):
       threading.Thread.__init__(self)
       self.c = c
       self.addr = addr
-      self.size = 1024
+      self.size = 1024*4
       self.server = server
 
    def run(self):
@@ -172,7 +175,7 @@ class ClientHandler(threading.Thread):
          elif (input_string[0] == 'sync'):
             self.server.handle_sync(input_string[1])
          elif (input_string[0] == 'request_server_sync'):
-            self.server.handle_request_server_sync()
+            self.server.handle_request_server_sync(self)
          elif (input_string[0] == 'reply_server_sync_tt'):
             self.server.handle_time_table(input_string[1])
          elif (input_string[0] == 'reply_server_sync_log'):
