@@ -60,6 +60,9 @@ class datacenter(object):
       print self.addr
       s.connect((self.addr[0], self.port_out))
       s.send("reply_server_sync_tt " + time_table)
+      s.close()
+      s = socket.socket()
+      s.connect((self.addr[0], self.port_out))
       s.send("reply_server_sync_log " + log)
       s.close()
 
