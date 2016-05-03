@@ -84,6 +84,7 @@ class datacenter(object):
             self.dictionary.updateDictionary(timestamp, nodeId, event.getContent())
 
    def extend_log(self, log):
+      l2 = pickle.loads(log)
       print l2.toString()
       self.log.extendLog(l2)
 
