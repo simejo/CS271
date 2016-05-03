@@ -72,19 +72,21 @@ class datacenter(object):
       print self.timeTable.toString()
 
 
-   def handle_log(self, l2):
+   def handle_log(self, log):
       l2 = pickle.loads(log)
       self.log.extendLog(l2)
 
-      for col in range(len(self.timeTable.getDim())):
+      print "RECEIVED AND MERGED LOG"
+      print self.log.toString()
+
+      for col in range(self.timeTable.getDim()):
          column = self.timeTable.getColumn(col)
-         # NEED MIN
          min_num = min(column)
          if(min_num > 0):
             self.log.delete_n_events_with_node_id_nid(min_num, col)
 
-      for x in log:
-         print x.toString()
+      print "NEW LOG"
+      print self.log.toString()
 
    def check_message(self,message):
       try:
@@ -139,7 +141,7 @@ class datacenter(object):
 
       s.close()
 
-server = datacenter(0, 12345, 10000)
+server = datacenter(1, 10000, 12345)
 
 def handler(signum, frame):
    try:
